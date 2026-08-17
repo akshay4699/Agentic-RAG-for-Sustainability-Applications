@@ -1,0 +1,30 @@
+# ──────────────────────────────────────────────
+# Agentic RAG App — Dependencies
+# ──────────────────────────────────────────────
+
+# LangChain ecosystem
+langchain
+langchain-groq
+langchain-community
+langchain-chroma
+langchain-nvidia-ai-endpoints
+langgraph
+
+# Search
+tavily-python
+
+# Backend
+fastapi
+uvicorn[standard]
+
+# Frontend
+streamlit
+requests
+
+# Config
+python-dotenv
+pydantic
+pydantic-settings
+
+# Document loading
+beautifulsoup4
