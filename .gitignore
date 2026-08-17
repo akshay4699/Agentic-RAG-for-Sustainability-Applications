@@ -1,4 +1,4 @@
-checkpointers.db
+checkpoints.db
 .env
 chroma_db
 __pycache__
