@@ -1,4 +1,4 @@
-# 🤖 Agentic RAG — Production App
+# Agentic RAG — Production App
 
 A **production-grade** Agentic RAG (Retrieval-Augmented Generation) system built with **FastAPI** + **Streamlit**.
 
@@ -98,11 +98,11 @@ curl -X POST http://localhost:8000/api/query \
 
 ## Features
 
-- 🔀 **Intelligent Routing** — questions auto-routed to vectorstore, web search, or direct LLM
-- 📚 **Document Retrieval** — Chroma vectorstore with NVIDIA embeddings
-- 🔍 **Relevance Grading** — filters irrelevant documents before generation
-- 🧪 **Hallucination Detection** — validates answers are grounded in sources
-- 🔄 **Query Rewriting** — rewrites poor queries for better retrieval
-- 🌐 **Web Search Fallback** — Tavily search when vectorstore fails
-- 💾 **Persistent VectorStore** — Chroma persisted to disk
-- 🎨 **Premium UI** — Dark-themed Streamlit chat with pipeline tracing
+- **Intelligent Routing** — questions auto-routed to vectorstore, web search, or direct LLM
+- **Document Retrieval** — Chroma vectorstore with NVIDIA embeddings
+- **Relevance Grading** — filters irrelevant documents before generation
+- **Hallucination Detection** — validates answers are grounded in sources
+- **Query Rewriting** — rewrites poor queries for better retrieval
+- **Web Search Fallback** — Tavily search when vectorstore fails
+- **Persistent VectorStore** — Chroma persisted to disk
+- **Premium UI** — Dark-themed Streamlit chat with pipeline tracing
