@@ -1,6 +1,6 @@
-# Agentic RAG — Production App
+# Agentic RAG — Sustainability & Emission Factors App
 
-A **production-grade** Agentic RAG (Retrieval-Augmented Generation) system built with **FastAPI** + **Streamlit**.
+A **production-grade** Agentic RAG (Retrieval-Augmented Generation) system built with **FastAPI** + **Streamlit** for querying Australian National Greenhouse Accounts Factors documents.
 
 ## Architecture
 
@@ -10,31 +10,32 @@ START → Route Question → [Vectorstore / Web Search / Direct LLM]
   → Generate Answer → Hallucination Check → Answer Quality → END
 ```
 
-**Tech Stack:** LangGraph · Groq (LLM) · Pinecone (VectorStore) · NVIDIA (Embeddings) · Tavily (Web Search) · FastAPI · Streamlit
+**Tech Stack:** LangGraph · Groq (LLM) · Pinecone (VectorStore) · NVIDIA Nemotron (Embeddings) · Tavily (Web Search) · FastAPI · Streamlit
 
 ## Project Structure
 
 ```
 agentic_rag_app/
 ├── backend/
-│   ├── main.py              # FastAPI entry point
-│   ├── config.py             # Settings & environment
-│   ├── models.py             # Pydantic models
-│   ├── state.py              # GraphState
-│   ├── ingest_pinecone.py    # Pinecone document ingestion script
+│   ├── main.py                   # FastAPI entry point
+│   ├── config.py                  # Settings & environment configuration
+│   ├── models.py                  # Pydantic models & structured outputs
+│   ├── state.py                   # GraphState definition
+│   ├── ingest_pinecone.py         # Document loader & Pinecone indexer
+│   ├── create_pinecone_index.py   # Pinecone index creation helper (2048 dims)
 │   ├── services/
-│   │   ├── llm.py            # Groq LLM
-│   │   ├── vectorstore.py    # Pinecone vectorstore
-│   │   └── search.py         # Tavily web search
+│   │   ├── llm.py                 # Groq LLM client
+│   │   ├── vectorstore.py         # Pinecone vectorstore & retriever
+│   │   └── search.py              # Tavily web search tool
 │   ├── chains/
-│   │   └── chains.py         # All LLM chains
+│   │   └── chains.py              # LangChain prompts & chains
 │   └── graph/
-│       ├── nodes.py           # Graph node functions
-│       ├── edges.py           # Decision functions
-│       └── graph.py           # Graph assembly
-├── data/                     # PDF documents folder
+│       ├── nodes.py                # LangGraph node functions
+│       ├── edges.py                # LangGraph conditional edge logic
+│       └── graph.py                # Graph assembly & compilation
+├── data/                          # National Greenhouse Accounts Factors PDFs
 ├── frontend/
-│   └── streamlit_app.py       # Chat UI
+│   └── streamlit_app.py            # Streamlit chat interface
 ├── requirements.txt
 └── README.md
 ```
@@ -65,29 +66,34 @@ PINECONE_API_KEY=your-pinecone-api-key
 PINECONE_INDEX_NAME=agentic-rag-au-emission-factor-app
 ```
 
-### 4. Index PDF Documents into Pinecone
+### 4. Create Pinecone Index (2048 Dimensions)
 
-Run the Pinecone ingestion script to index all PDFs from `agentic_rag_app/data`:
+If you haven't created the Pinecone index with **2048 dimensions**, run:
+
+```bash
+cd agentic_rag_app
+python -m backend.create_pinecone_index
+```
+
+### 5. Index PDF Documents into Pinecone
+
+Run the Pinecone ingestion script to chunk and upload all PDFs from `agentic_rag_app/data`:
 
 ```bash
 cd agentic_rag_app
 python -m backend.ingest_pinecone
 ```
 
-### 5. Start the Backend
+### 6. Start the Backend API
 
 ```bash
 cd agentic_rag_app
 uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+### 7. Start the Frontend UI
 
-On first run, the backend will:
-- Validate all API keys
-- Load and index documents into Chroma (persisted to `./chroma_db`)
-- Compile the LangGraph pipeline
-
-### 5. Start the Frontend
+In a new terminal:
 
 ```bash
 cd agentic_rag_app
@@ -107,16 +113,15 @@ streamlit run frontend/streamlit_app.py
 ```bash
 curl -X POST http://localhost:8000/api/query \
   -H "Content-Type: application/json" \
-  -d '{"question": "What are LLM agents?"}'
+  -d '{"question": "What is the 2025 Scope 2 emission factor for electricity in New South Wales?"}'
 ```
 
-## Features
+## Key Features
 
-- **Intelligent Routing** — questions auto-routed to vectorstore, web search, or direct LLM
-- **Document Retrieval** — Chroma vectorstore with NVIDIA embeddings
-- **Relevance Grading** — filters irrelevant documents before generation
-- **Hallucination Detection** — validates answers are grounded in sources
-- **Query Rewriting** — rewrites poor queries for better retrieval
-- **Web Search Fallback** — Tavily search when vectorstore fails
-- **Persistent VectorStore** — Chroma persisted to disk
-- **Premium UI** — Dark-themed Streamlit chat with pipeline tracing
+- **Intelligent Routing** — Questions automatically route to vectorstore, web search, or direct LLM.
+- **Document Retrieval** — Pinecone vectorstore powered by 2048-dimensional NVIDIA Nemotron embeddings.
+- **PDF Ingestion Engine** — Parses and chunks multi-page Sustainability and Greenhouse Accounts PDFs.
+- **Relevance & Fallback Grading** — Evaluates document relevance to avoid hallucinations and triggers query rewrites or web search when necessary.
+- **Robust Flow Control** — Guardrails against infinite loops and handles API rate limits gracefully.
+- **Interactive UI** — Streamlit chat interface with step-by-step pipeline execution tracing.
+
