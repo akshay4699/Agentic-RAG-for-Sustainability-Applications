@@ -26,5 +26,8 @@ python-dotenv
 pydantic
 pydantic-settings
 
-# Document loading
+# Document loading & Vectorstore
 beautifulsoup4
+pypdf
+langchain-pinecone
+pinecone

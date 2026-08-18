@@ -29,8 +29,14 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str
     TAVILY_API_KEY: str
     NVIDIA_API_KEY: str
+    PINECONE_API_KEY: str = ""
+
+    # --- Pinecone VectorStore ---
+    PINECONE_INDEX_NAME: str = "agentic-rag-au-emission-factor-app"
+    DATA_DIR: str = "./data"
 
     # --- LangSmith (optional tracing) ---
+
     LANGSMITH_TRACING: bool = True
     LANGCHAIN_TRACING_V2: bool = True
     LANGSMITH_API_KEY: str = ""
@@ -78,6 +84,11 @@ def get_settings() -> Settings:
     os.environ.setdefault("GROQ_API_KEY", settings.GROQ_API_KEY)
     os.environ.setdefault("TAVILY_API_KEY", settings.TAVILY_API_KEY)
     os.environ.setdefault("NVIDIA_API_KEY", settings.NVIDIA_API_KEY)
+    os.environ.setdefault("USER_AGENT", "AgenticRAGApp/1.0")
+    if settings.PINECONE_API_KEY:
+        os.environ["PINECONE_API_KEY"] = settings.PINECONE_API_KEY
+
+
 
     # Ensure LangSmith tracing variables are set in os.environ for LangChain internals
     api_key = settings.LANGSMITH_API_KEY or os.getenv("LANGCHAIN_API_KEY", "")

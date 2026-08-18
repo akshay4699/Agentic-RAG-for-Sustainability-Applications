@@ -51,29 +51,30 @@ def grade_documents(state: GraphState) -> GraphState:
     """Grade each retrieved document for relevance. Filter out irrelevant ones."""
     logger.info("--- NODE: Grade Documents ---")
     question = state["question"]
-    documents = state["documents"]
+    documents = state.get("documents", [])
 
     doc_grader = get_doc_grader()
     filtered_docs = []
-    web_search_needed = False
 
     for i, doc in enumerate(documents):
-        score = doc_grader.invoke({
-            "question": question,
-            "document": doc.page_content,
-        })
-        if score.binary_score == "yes":
-            logger.info(f"    Doc {i + 1}: RELEVANT")
+        try:
+            score = doc_grader.invoke({
+                "question": question,
+                "document": doc.page_content,
+            })
+            if score.binary_score == "yes":
+                logger.info(f"    Doc {i + 1}: RELEVANT")
+                filtered_docs.append(doc)
+            else:
+                logger.info(f"    Doc {i + 1}: NOT RELEVANT")
+        except Exception as e:
+            logger.warning(f"    Doc {i + 1}: Error grading document ({e}), keeping document as fallback.")
             filtered_docs.append(doc)
-        else:
-            logger.info(f"    Doc {i + 1}: NOT RELEVANT")
-            web_search_needed = True
 
     logger.info(f"    Kept {len(filtered_docs)}/{len(documents)} documents")
     return {
         "documents": filtered_docs,
         "question": question,
-        "web_search_needed": web_search_needed,
     }
 
 
@@ -85,17 +86,23 @@ def transform_query(state: GraphState) -> GraphState:
     """Re-write the query to produce a better question for retrieval."""
     logger.info("--- NODE: Transform Query ---")
     question = state["question"]
+    retry_count = state.get("retry_count", 0)
 
-    query_rewriter = get_query_rewriter()
-    better_question = query_rewriter.invoke({"question": question})
-
-    logger.info(f"    Original:  {question}")
-    logger.info(f"    Rewritten: {better_question}")
+    try:
+        query_rewriter = get_query_rewriter()
+        better_question = query_rewriter.invoke({"question": question})
+        logger.info(f"    Original:  {question}")
+        logger.info(f"    Rewritten: {better_question}")
+    except Exception as e:
+        logger.warning(f"    Query rewriter failed: {e}. Keeping original question.")
+        better_question = question
 
     return {
         "question": better_question,
-        "documents": state["documents"],
+        "documents": state.get("documents", []),
+        "retry_count": retry_count + 1,
     }
+
 
 
 # ──────────────────────────────────────────────

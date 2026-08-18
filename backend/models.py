@@ -17,11 +17,13 @@ class RouteQuery(BaseModel):
     datasource: Literal["vectorstore", "web_search", "direct_llm"] = Field(
         ...,
         description=(
-            "Choose: 'vectorstore' for domain-specific questions about agents/prompts/LLMs, "
-            "'web_search' for current events or unknown topics, "
+            "Choose: 'vectorstore' for domain-specific questions about National Greenhouse Accounts factors, "
+            "emissions factors, carbon accounting, energy, scope 1/2/3 emissions, LLMs, or technical documents; "
+            "'web_search' for current events or unknown topics; "
             "'direct_llm' for simple greetings or general knowledge."
         ),
     )
+
 
 
 class GradeDocuments(BaseModel):

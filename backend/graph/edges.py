@@ -45,21 +45,23 @@ def route_question_decision(state: GraphState) -> str:
 def decide_to_generate(state: GraphState) -> str:
     """After grading documents, decide: generate / transform_query / web_search."""
     logger.info("--- DECISION: Decide Fallback ---")
-    documents = state["documents"]
-    web_search_needed = state.get("web_search_needed", False)
+    documents = state.get("documents", [])
+    retry_count = state.get("retry_count", 0)
+    settings = get_settings()
 
-    if not documents:
-        # No relevant docs at all → web search
-        logger.info("    -> No relevant docs found, falling back to WEB SEARCH")
-        return "web_search"
-    elif web_search_needed:
-        # Some docs irrelevant → try rewriting the query
-        logger.info("    -> Some irrelevant docs, TRANSFORMING QUERY")
-        return "transform_query"
-    else:
-        # All docs relevant → proceed to generate
-        logger.info("    -> All docs relevant, proceeding to GENERATE")
+    if documents:
+        # We have at least 1 relevant doc — proceed to generate
+        logger.info(f"    -> Found {len(documents)} relevant doc(s), proceeding to GENERATE")
         return "generate"
+    elif retry_count >= settings.MAX_RETRY_COUNT:
+        # Max retries reached without relevant docs -> fallback to web search
+        logger.warning("    -> Max retries reached, falling back to WEB SEARCH")
+        return "web_search"
+    else:
+        # No docs found yet -> transform query and try again
+        logger.info("    -> No relevant docs found, TRANSFORMING QUERY")
+        return "transform_query"
+
 
 
 # ──────────────────────────────────────────────

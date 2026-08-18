@@ -10,7 +10,7 @@ START → Route Question → [Vectorstore / Web Search / Direct LLM]
   → Generate Answer → Hallucination Check → Answer Quality → END
 ```
 
-**Tech Stack:** LangGraph · Groq (LLM) · Chroma (VectorStore) · NVIDIA (Embeddings) · Tavily (Web Search) · FastAPI · Streamlit
+**Tech Stack:** LangGraph · Groq (LLM) · Pinecone (VectorStore) · NVIDIA (Embeddings) · Tavily (Web Search) · FastAPI · Streamlit
 
 ## Project Structure
 
@@ -21,9 +21,10 @@ agentic_rag_app/
 │   ├── config.py             # Settings & environment
 │   ├── models.py             # Pydantic models
 │   ├── state.py              # GraphState
+│   ├── ingest_pinecone.py    # Pinecone document ingestion script
 │   ├── services/
 │   │   ├── llm.py            # Groq LLM
-│   │   ├── vectorstore.py    # Chroma vectorstore
+│   │   ├── vectorstore.py    # Pinecone vectorstore
 │   │   └── search.py         # Tavily web search
 │   ├── chains/
 │   │   └── chains.py         # All LLM chains
@@ -31,6 +32,7 @@ agentic_rag_app/
 │       ├── nodes.py           # Graph node functions
 │       ├── edges.py           # Decision functions
 │       └── graph.py           # Graph assembly
+├── data/                     # PDF documents folder
 ├── frontend/
 │   └── streamlit_app.py       # Chat UI
 ├── requirements.txt
@@ -42,7 +44,7 @@ agentic_rag_app/
 ### 1. Prerequisites
 
 - Python 3.11+
-- API keys for: **Groq**, **Tavily**, **NVIDIA**
+- API keys for: **Groq**, **Tavily**, **NVIDIA**, **Pinecone**
 
 ### 2. Install Dependencies
 
@@ -59,14 +61,26 @@ Ensure your `.env` file (at the workspace root) contains:
 GROQ_API_KEY=your-groq-api-key
 TAVILY_API_KEY=your-tavily-api-key
 NVIDIA_API_KEY=your-nvidia-api-key
+PINECONE_API_KEY=your-pinecone-api-key
+PINECONE_INDEX_NAME=agentic-rag-au-emission-factor-app
 ```
 
-### 4. Start the Backend
+### 4. Index PDF Documents into Pinecone
+
+Run the Pinecone ingestion script to index all PDFs from `agentic_rag_app/data`:
+
+```bash
+cd agentic_rag_app
+python -m backend.ingest_pinecone
+```
+
+### 5. Start the Backend
 
 ```bash
 cd agentic_rag_app
 uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
 
 On first run, the backend will:
 - Validate all API keys

@@ -35,14 +35,15 @@ _ROUTER_PROMPT = ChatPromptTemplate.from_messages([
         """You are an expert at routing a user question to the correct data source.
 
 You have access to:
-- 'vectorstore': Contains documents about LLM agents, prompt engineering, and adversarial attacks on LLMs.
-- 'web_search': Use for current events, recent news, or topics NOT in the vectorstore.
-- 'direct_llm': Use for simple greetings, general knowledge, or questions that don't need retrieval.
+- 'vectorstore': Contains documents about National Greenhouse Accounts Factors, emissions, fuel/energy carbon factors, Scope 1/2/3 emissions, and domain reports.
+- 'web_search': Use for current news or topics NOT in the vectorstore.
+- 'direct_llm': Use for simple greetings, general conversation, or basic non-retrieval questions.
 
 Route the question to the most appropriate source.""",
     ),
     ("human", "{question}"),
 ])
+
 
 
 @lru_cache()
